@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroundzing"
+    tools:context=".activity.MainActivity">
+
+    <TextView
+        android:id="@+id/txtSongName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:text="Cam on vi tat ca"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtSongSinger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSongName"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:text="Trung Quan Idol"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:id="@+id/icon_zing"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@+id/txtSongSinger"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:background="@drawable/iconzing" />
+
+    <ImageButton
+        android:id="@+id/btnPlay"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="5dp"
+        android:background="@drawable/pause"
+        android:backgroundTint="#fffdfd" />
+
+    <TextView
+
+        android:layout_alignBottom="@+id/seekbar"
+        android:layout_alignBaseline="@+id/seekbar"
+        android:id="@+id/txtTimerStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnPlay"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="10dp"
+        android:text="00:00"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/txtTimerEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnPlay"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:text="00:00"
+        android:textColor="#ffffff" />
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btnPlay"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/txtTimerEnd"
+        android:layout_toRightOf="@id/txtTimerStart" />
+
+    <TextView
+        android:id="@+id/song_lyris"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/seekbar"
+        android:layout_below="@+id/icon_zing"
+        android:textColor="#ffffff" />
+
+
+</RelativeLayout>
