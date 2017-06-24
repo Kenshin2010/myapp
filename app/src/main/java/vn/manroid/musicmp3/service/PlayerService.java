@@ -13,10 +13,13 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.io.File;
 
 import vn.manroid.musicmp3.R;
+
+import static android.content.ContentValues.TAG;
 
 public class PlayerService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
@@ -37,7 +40,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (mediaPlayer==null){
+        if (mediaPlayer == null) {
             playAudio();
             showNotification();
             IntentFilter filter = new IntentFilter("ChangeStatusMedia");
@@ -65,6 +68,8 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.pause();
                             updateTimerRunable.onPause();
+//                            stopForeground(true);
+//                            notificationManager.cancel(1);
                         } else {
                             mediaPlayer.start();
                             updateTimerRunable.onResume();
@@ -100,7 +105,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                 .addAction(R.drawable.play, "stop", stopAudio)
                 .setSmallIcon(R.drawable.backgroundzing).build();
 
-        // notificationManager.notify(1,notification);
+//        notificationManager.notify(1, notification);
 
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
@@ -123,7 +128,6 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                         }
                         break;
                     case "SeekChange":
-
                         int currentPosition = intent.getIntExtra("currentPosition", 0);
                         mediaPlayer.seekTo(currentPosition * mediaPlayer.getDuration() / 100);
                         break;
@@ -172,6 +176,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mediaPlayer.reset();
         return false;
     }
 
@@ -211,12 +216,13 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                     e.printStackTrace();
                 }
 
-
                 sendDurationToActivity(mediaPlayer.getDuration());
 
                 sendProgressToActivity(mediaPlayer.getCurrentPosition()
                                 * 100 / mediaPlayer.getDuration(),
                         mediaPlayer.getCurrentPosition());
+
+                Log.d(TAG, "run: key log");
 
                 synchronized (pauseLock) {
                     while (isPause) {
