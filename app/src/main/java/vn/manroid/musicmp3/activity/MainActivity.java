@@ -1,6 +1,9 @@
 package vn.manroid.musicmp3.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -9,7 +12,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.concurrent.TimeUnit;
 
 import vn.manroid.musicmp3.R;
 import vn.manroid.musicmp3.model.Song;
@@ -31,10 +35,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         initView();
 
         intent = new Intent(this, PlayerService.class);
         startService(intent);
+
+        IntentFilter filter = new IntentFilter("SendDuration");
+        filter.addAction("SendProgress");
+        LocalBroadcastManager.getInstance(this).registerReceiver(createMessageReceiver(), filter);
 
     }
 
@@ -51,17 +60,15 @@ public class MainActivity extends AppCompatActivity
 
         btnPlay = (ImageView) findViewById(R.id.btnPlay);
 
+
         btnPlay.setOnClickListener(this);
         seekBar.setOnSeekBarChangeListener(this);
-
-
     }
 
     @Override
     public void onDestroy() {
-        stopService(intent);
+//        stopService(intent);
         super.onDestroy();
-        Toast.makeText(this, "Destroy", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -88,7 +95,47 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        sendCurrentPositionToService(seekBar.getProgress());
     }
 
+    private BroadcastReceiver createMessageReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case "SendDuration":
+                        int duration = intent.getIntExtra("duration", 0);
+                        String endTime = String.format("%02d:%02d"
+                                , TimeUnit.MILLISECONDS.toMinutes(duration)
+                                , TimeUnit.MILLISECONDS.toSeconds(duration)
+                                        - TimeUnit.MINUTES
+                                        .toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+
+                        txtTimerEnd.setText(endTime);
+                        break;
+
+                    case "SendProgress":
+                        int progress = intent.getIntExtra("progress",0);
+                        int currentPosition = intent.getIntExtra("currentPosition",0);
+
+                        seekBar.setProgress(progress);
+
+                        String startTime = String.format("%02d:%02d"
+                                , TimeUnit.MILLISECONDS.toMinutes(currentPosition)
+                                , TimeUnit.MILLISECONDS.toSeconds(currentPosition)
+                                        - TimeUnit.MINUTES
+                                        .toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
+                        txtTimerStart.setText(startTime);
+
+                        break;
+                }
+            }
+        };
+    }
+
+    private void sendCurrentPositionToService(int currentPosition){
+        Intent intent = new Intent("SeekChange");
+        intent.putExtra("currentPosition",currentPosition);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 }
